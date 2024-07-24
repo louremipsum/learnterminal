@@ -12,6 +12,7 @@ import {
 import OpenAIModal from "./OpenAIModal";
 
 const Settings = () => {
+  const { open, setIsOpen } = useState(false);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -22,6 +23,7 @@ const Settings = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem>Profile </DropdownMenuItem>
         <DropdownMenuItem>
+          <Button variant="outline">OpenAI API Key</Button>
           <OpenAIModal />
         </DropdownMenuItem>
         <DropdownMenuItem>
