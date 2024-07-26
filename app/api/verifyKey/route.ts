@@ -1,4 +1,5 @@
-import type { NextRequest, NextResponse } from "next/server";
+import 'server-only';
+import type { NextRequest } from "next/server";
 import OpenAI from "openai";
 
 export async function GET(request: NextRequest) {
