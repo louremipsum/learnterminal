@@ -1,60 +1,101 @@
-'use client'
+"use client";
+import { useChat, type Message } from "ai/react";
+import { cn } from "@/lib/utils";
+import { ChatList } from "@/components/chat/chat-list";
+import { ChatPanel } from "@/components/chat/chat-panel";
+import { ChatScrollAnchor } from "@/components/chat/chat-scroll-anchor";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "react-hot-toast";
+import Link from "next/link";
+import { ExternalLink } from "../external-link";
+import { ScrollArea } from "../ui/scroll-area";
 
-import { ChatList } from '@/components/chat/chat-list'
-import { ChatPanel } from '@/components/chat/chat-panel'
-import { EmptyScreen } from '@/components/empty-screen'
-import { UIState } from '@/lib/chat/actions'
-import { useScrollAnchor } from '@/lib/hooks/use-scroll-anchor'
-import { cn } from '@/lib/utils'
-import { usePathname, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-
-export interface ChatProps extends React.ComponentProps<'div'> {
-  messagesUIState: UIState
+export interface ChatProps extends React.ComponentProps<"div"> {
+  initialMessages?: Message[];
+  id?: string;
 }
 
-export function Chat({ messagesUIState, id, className }: ChatProps) {
-  const router = useRouter()
-  const path = usePathname()
-  const [input, setInput] = useState('')
-
-  const [uiState, setUIState] = useState(messagesUIState)
-
+export function Chat({ id, initialMessages, className }: ChatProps) {
+  const [key, setKey] = useLocalStorage<string | null>("ai-token", null);
+  const [keyDialog, setKeyDialog] = useState<boolean>(!key);
   useEffect(() => {
-    const messagesLength = uiState?.length
-    if (messagesLength === 2) {
-      router.refresh()
+    if (key) {
+      setKeyDialog(false);
     }
-  }, [uiState, router])
-
-  const { messagesRef, scrollRef, visibilityRef, isAtBottom, scrollToBottom } =
-    useScrollAnchor()
-
+  }, [key]);
+  const { messages, append, reload, stop, isLoading, input, setInput } =
+    useChat({
+      initialMessages,
+      id,
+      body: {
+        id,
+        key,
+      },
+      onResponse(response) {
+        if (response.status === 401) {
+          toast.error(response.statusText);
+        }
+      },
+    });
   return (
-    <div
-      className="group w-full overflow-auto pl-0 peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]"
-      ref={scrollRef}
-    >
-      <div
-        className={cn('pb-[200px] pt-4 md:pt-10', className)}
-        ref={messagesRef}
-      >
-        {messagesUIState.length ? (
-          <ChatList messagesUIState={uiState} />
-        ) : (
-          <EmptyScreen />
+    <div className="">
+      {/* <ScrollArea className="h-screen"> */}
+      <div className={cn("pb-[100px] pt-4 md:pt-10", className)}>
+        {messages.length && (
+          <>
+            <ChatList messages={messages} />
+            <ChatScrollAnchor trackVisibility={isLoading} />
+          </>
         )}
-        <div className="h-px w-full" ref={visibilityRef} />
       </div>
+      {/* </ScrollArea> */}
       <ChatPanel
         id={id}
+        isLoading={isLoading}
+        stop={stop}
+        append={append}
+        reload={reload}
+        messages={messages}
         input={input}
         setInput={setInput}
-        isAtBottom={isAtBottom}
-        scrollToBottom={scrollToBottom}
-        messagesUIState={uiState}
-        setMessagesUIState={setUIState}
       />
+
+      <Dialog open={keyDialog} onOpenChange={setKeyDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enter your OpenAI Key</DialogTitle>
+            <DialogDescription>
+              If you have not obtained your OpenAI API key, you can do so by{" "}
+              <ExternalLink href="https://platform.openai.com/signup/">
+                signing up
+              </ExternalLink>
+              on the OpenAI website. The token will be saved to your
+              browser&apos;s local storage under the name{" "}
+              <code className="font-mono">ai-token</code>.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Link
+              href={"/dashboard/settings/ai"}
+              className="text-green-500 underline"
+            >
+              <Button color="green" variant={"default"}>
+                Settings
+              </Button>
+            </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-  )
+  );
 }
