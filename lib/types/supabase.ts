@@ -37,25 +37,56 @@ export type Database = {
       }
       user_info: {
         Row: {
+          chat_id: string | null
           created_at: string
-          proficiency: string | null
+          feedback_preferences: string | null
+          id: string
+          learning_objective: string | null
+          learning_style: string | null
+          os_familiarity: string | null
+          preferred_language: string | null
+          proficiency_level: string | null
+          use_case: string | null
           user_id: string
         }
         Insert: {
+          chat_id?: string | null
           created_at?: string
-          proficiency?: string | null
+          feedback_preferences?: string | null
+          id?: string
+          learning_objective?: string | null
+          learning_style?: string | null
+          os_familiarity?: string | null
+          preferred_language?: string | null
+          proficiency_level?: string | null
+          use_case?: string | null
           user_id?: string
         }
         Update: {
+          chat_id?: string | null
           created_at?: string
-          proficiency?: string | null
+          feedback_preferences?: string | null
+          id?: string
+          learning_objective?: string | null
+          learning_style?: string | null
+          os_familiarity?: string | null
+          preferred_language?: string | null
+          proficiency_level?: string | null
+          use_case?: string | null
           user_id?: string
         }
         Relationships: [
           {
+            foreignKeyName: "user_info_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_info_user_id_fkey"
             columns: ["user_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },

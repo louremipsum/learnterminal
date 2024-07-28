@@ -1,59 +1,40 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { createClient } from "@/utils/supabase/server";
 
-export default function SettingPage() {
+export default async function SettingPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <div className="grid gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Store Name</CardTitle>
+          <CardTitle>Name</CardTitle>
           <CardDescription>
-            Used to identify your store in the marketplace.
+            Your name as it appears on your profile.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <Input placeholder="Store Name" />
-          </form>
+          <Input placeholder="Name" value={user?.user_metadata.first_name} />
         </CardContent>
-        <CardFooter className="border-t px-6 py-4">
-          <Button>Save</Button>
-        </CardFooter>
       </Card>
-      <Card x-chunk="dashboard-04-chunk-2">
+      <Card>
         <CardHeader>
-          <CardTitle>Plugins Directory</CardTitle>
-          <CardDescription>
-            The directory within your project, in which your plugins are
-            located.
-          </CardDescription>
+          <CardTitle>Email</CardTitle>
+          <CardDescription>Your email address.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="flex flex-col gap-4">
-            <Input placeholder="Project Name" defaultValue="/content/plugins" />
-            <div className="flex items-center space-x-2">
-              <Checkbox id="include" defaultChecked />
-              <label
-                htmlFor="include"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Allow administrators to change the directory.
-              </label>
-            </div>
-          </form>
+          <Input placeholder="Email" value={user?.email} />
         </CardContent>
-        <CardFooter className="border-t px-6 py-4">
-          <Button>Save</Button>
-        </CardFooter>
       </Card>
     </div>
   );

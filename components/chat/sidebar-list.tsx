@@ -5,7 +5,7 @@ import { SidebarItems } from "@/components/chat/sidebar-items";
 import { cache } from "react";
 
 interface SidebarListProps {
-  userId?: string;
+  userId: string;
   children?: React.ReactNode;
 }
 

@@ -17,18 +17,18 @@ export default async function ProtectedPage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
-      <section className="m-auto flex">
-        <aside className="w-1/2 h-full m-auto">
+      <section className=" flex my-auto">
+        <aside className="w-1/2 h-full my-auto mx-16">
           <p className="text-xl text-bold text-green-900 my-3">
             Welcome to the mainframe👋
           </p>
           <p>Start a new session or join an exisiting one</p>
         </aside>
         <main>
-          <div className="h-full w-3/4 m-auto">
+          <div className="h-full w-1/2 my-auto">
             <SidebarList userId={user.id} />
           </div>
-          <NewChat />
+          <NewChat userId={user.id} />
         </main>
       </section>
       <Footer />
