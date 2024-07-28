@@ -4,7 +4,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/server";
 import { Database } from "@/lib/types/supabase";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { permanentRedirect, redirect } from "next/navigation";
 import { type Chat } from "@/lib/types/types";
 
 export async function getChats(userId?: string | null) {
@@ -37,6 +37,34 @@ export async function getChat(id: string) {
   return (data?.payload as Chat) ?? null;
 }
 
+export async function getChatUserInfo(userId: string, chatId: string) {
+  try {
+    const supabase: SupabaseClient<Database> = await createClient();
+    const { data } = await supabase
+      .from("user_info")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("chat_id", chatId)
+      .maybeSingle();
+    return data ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function postChatUserInfo(
+  userId: string,
+  chatId: string,
+  data: Record<string, string>
+) {
+  const supabase: SupabaseClient<Database> = await createClient();
+  const { error } = await supabase
+    .from("user_info")
+    .upsert({ ...data, user_id: userId, chat_id: chatId });
+  if (error) throw error;
+  return permanentRedirect(`/dashboard/mainframe/${chatId}`);
+}
+
 export async function removeChat({ id, path }: { id: string; path: string }) {
   try {
     const supabase: SupabaseClient<Database> = await createClient();
@@ -55,9 +83,15 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
 export async function clearChats() {
   try {
     const supabase: SupabaseClient<Database> = await createClient();
-    await supabase.from("chats").delete().throwOnError();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    await supabase
+      .from("chats")
+      .delete()
+      .eq("user_id", user!.id)
+      .throwOnError();
     revalidatePath("/dashboard");
-    return redirect("/dashboard");
   } catch (error) {
     console.log("clear chats error", error);
     return {
@@ -94,4 +128,45 @@ export async function shareChat(id: string) {
     .throwOnError();
 
   return payload;
+}
+
+export async function getWSURL(userId: string) {
+  try {
+    const response = await fetch(`${process.env.SERVER_URL}/start-container`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
+    });
+    const data = await response.json();
+    return data.url;
+  } catch (e) {
+    console.log(e);
+    const response = await fetch(`${process.env.SERVER_URL}/stop-container`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
+    });
+    const resp = await response.json();
+    console.log(resp);
+  }
+}
+
+export async function closeContainer(userId: string) {
+  try {
+    const response = await fetch(`${process.env.SERVER_URL}/stop-container`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
+    });
+    revalidatePath("/dashboard/mainframe");
+    return response;
+  } catch (e) {
+    console.log(e);
+  }
 }
