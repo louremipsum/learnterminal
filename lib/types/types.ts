@@ -1,4 +1,5 @@
 import { type Message } from "ai";
+import { Database } from "./supabase";
 
 // TODO refactor and remove unneccessary duplicate data.
 export interface Chat extends Record<string, any> {
@@ -17,3 +18,9 @@ export type ServerActionResult<T> = Promise<
       error: string;
     }
 >;
+
+type ChatUserInfo = Omit<
+  Database["public"]["Tables"]["user_info"]["Row"],
+  "created_at" | "id"
+>;
+export interface UserInfo extends ChatUserInfo {}
