@@ -94,7 +94,13 @@ export default function XTerm({ userId }: { userId: string }) {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant={"outline"} size={"icon"} className="rounded-lg">
-              <RefreshCcw className="size-4" onClick={() => setSocketURL("")} />
+              <RefreshCcw
+                className="size-4"
+                onClick={() => {
+                  setSocketURL("");
+                  setDidURLCome(false);
+                }}
+              />
             </Button>
           </TooltipTrigger>
           <TooltipContent>Reload the terminal</TooltipContent>
