@@ -169,8 +169,9 @@ export async function closeContainer(userId: string) {
       },
       body: JSON.stringify({ userId }),
     });
-    revalidatePath("/dashboard/mainframe");
-    return response;
+    // revalidatePath("/dashboard/mainframe");
+    const data = await response.json();
+    return data;
   } catch (e) {
     console.error(e);
   }
