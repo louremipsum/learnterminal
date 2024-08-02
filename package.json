@@ -31,6 +31,7 @@
     "dockerode": "^4.0.2",
     "framer-motion": "^11.3.17",
     "geist": "^1.2.1",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.414.0",
     "micromark-util-sanitize-uri": "^2.0.0",
     "next": "latest",
@@ -59,6 +60,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "20.11.5",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
