@@ -6,6 +6,7 @@ import { Database } from "@/lib/types/supabase";
 import { revalidatePath } from "next/cache";
 import { permanentRedirect, redirect } from "next/navigation";
 import { type Chat } from "@/lib/types/types";
+import { generateToken } from "@/lib/utils";
 
 export async function getChats(userId?: string | null) {
   if (!userId) {
@@ -93,7 +94,7 @@ export async function clearChats() {
       .throwOnError();
     revalidatePath("/dashboard");
   } catch (error) {
-    console.log("clear chats error", error);
+    console.error("clear chats error: ", error);
     return {
       error: "Unauthorized",
     };
@@ -131,42 +132,46 @@ export async function shareChat(id: string) {
 }
 
 export async function getWSURL(userId: string) {
+  const token = generateToken(userId);
   try {
     const response = await fetch(`${process.env.SERVER_URL}/start-container`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ userId }),
     });
     const data = await response.json();
     return data.url;
   } catch (e) {
-    console.log(e);
+    console.error(e);
     const response = await fetch(`${process.env.SERVER_URL}/stop-container`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ userId }),
     });
     const resp = await response.json();
-    console.log(resp);
   }
 }
 
 export async function closeContainer(userId: string) {
+  const token = generateToken(userId);
   try {
     const response = await fetch(`${process.env.SERVER_URL}/stop-container`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ userId }),
     });
     revalidatePath("/dashboard/mainframe");
     return response;
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 }
