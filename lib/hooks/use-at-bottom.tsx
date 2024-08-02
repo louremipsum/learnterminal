@@ -9,12 +9,6 @@ export function useAtBottom(ref: React.RefObject<HTMLElement>, offset = 0) {
         const atBottom =
           ref.current.scrollHeight - ref.current.scrollTop <=
           ref.current.clientHeight + offset;
-        console.log(
-          "Scroll Position:",
-          ref.current.scrollTop,
-          "At Bottom:",
-          atBottom
-        );
         setIsAtBottom(atBottom);
       }
     };
