@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -34,7 +34,6 @@ const formSchema = z.object({
 });
 
 export default function AI() {
-  const { toast } = useToast();
   const [APIToken, setAPIToken] = useLocalStorage<string | null>(
     "ai-token",
     null
@@ -61,12 +60,10 @@ export default function AI() {
     try {
       setAPIToken(null);
       form.reset({ api_key: "" });
-      toast({ description: "Key cleared successfully" });
+      toast.success("Key cleared successfully");
     } catch (error) {
       console.error("Failed to clear key from localStorage:", error);
-      toast({
-        variant: "destructive",
-        title: "Something went wrong.",
+      toast.error("Something went wrong.", {
         description: "Failed to clear key from localStorage.",
       });
     }
@@ -102,11 +99,9 @@ export default function AI() {
       }
       setAPIToken(values.api_key);
 
-      toast({ description: "Key verified and saved successfully" });
+      toast.success("Key verified and saved successfully");
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Something went wrong.",
+      toast.error("Something went wrong.", {
         description: "Invalid OpenAI API Key",
       });
     }

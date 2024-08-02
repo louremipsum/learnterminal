@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import AttachAddon from "@/lib/CustomAddon";
 import { closeContainer, getWSURL } from "@/app/actions";
 import { LoaderCircle, RefreshCcw } from "lucide-react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -26,23 +27,23 @@ import {
   AlertDialogAction,
 } from "./ui/alert-dialog";
 import { AlertDialogHeader, AlertDialogFooter } from "./ui/alert-dialog";
-import { useToast } from "./ui/use-toast";
 
 export default function XTerm({ userId }: { userId: string }) {
   const xtermRef = useRef<HTMLDivElement | null>(null);
   const xterm = useRef<Terminal | null>(null);
   const [socketURL, setSocketURL] = useState("");
   const [didURLCome, setDidURLCome] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function deleteTerminal(userId: string) {
-    const { toast } = useToast();
     setIsLoading(true);
     try {
-      const response = await closeContainer(userId);
-      toast({ description: "Terminal Terminated successfully!" });
+      toast.promise(closeContainer(userId), {
+        loading: "Deleting Terminal...",
+        success: "Successfully deleted the terminal",
+        error: "Error",
+      });
     } catch (e) {
-      toast({ description: "Failed to terminate terminal" });
       console.error(e);
     } finally {
       setIsLoading(false);
@@ -69,6 +70,7 @@ export default function XTerm({ userId }: { userId: string }) {
       // const fitAddon = new FitAddon();
       // xterm.current.loadAddon(fitAddon);
       const socket = new WebSocket(socketURL);
+      console.log(socket);
       const attachAddon = new AttachAddon(socket);
       xterm.current.loadAddon(attachAddon);
 
@@ -173,7 +175,9 @@ export default function XTerm({ userId }: { userId: string }) {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel disabled={isLoading}>
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={async () => {
                           await deleteTerminal(userId);
