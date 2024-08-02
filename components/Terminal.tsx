@@ -69,7 +69,6 @@ export default function XTerm({ userId }: { userId: string }) {
       // const fitAddon = new FitAddon();
       // xterm.current.loadAddon(fitAddon);
       const socket = new WebSocket(socketURL);
-      console.log("socket created: ", socket);
       const attachAddon = new AttachAddon(socket);
       xterm.current.loadAddon(attachAddon);
 
@@ -85,6 +84,11 @@ export default function XTerm({ userId }: { userId: string }) {
     <div>
       <div className="h-[90vh] m-3 rounded-lg overflow-hidden p-2 bg-black">
         <div ref={xtermRef} className="overflow-x-hidden" />
+        {!didURLCome && (
+          <div className="text-center text-white">
+            <LoaderCircle className="animate-spin" />
+          </div>
+        )}
       </div>
       <div className="m-auto w-[90%] flex justify-around items-center border border-slate-400 rounded-2xl">
         <Tooltip>
