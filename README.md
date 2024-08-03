@@ -27,3 +27,8 @@ LearnTerminal is a web-based application that allows users to learn and practice
 - Node-pty
 - WebSocket
 - xterm.js
+
+
+### General Architecture
+
+![mainframe-archi](https://github.com/user-attachments/assets/0107aef9-fa77-47cd-b3ce-c1850baf1154)
