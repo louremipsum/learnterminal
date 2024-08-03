@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 
 // Form validation schema
 const FormSchema = z
@@ -41,6 +42,7 @@ export default function Signup({
 }: {
   searchParams: { message: string };
 }) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -68,10 +70,9 @@ export default function Signup({
     });
 
     if (error) {
-      return redirect("/signup?message=Could not authenticate user");
+      router.replace("/signup?message=" + error.code);
     }
-
-    return redirect("/signup?message=Check email to continue sign in process");
+    router.replace("dashboard");
   };
 
   return (

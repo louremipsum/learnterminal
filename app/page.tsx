@@ -129,6 +129,7 @@ export default async function Index() {
                 width="959"
                 height="433"
                 alt="Demo"
+                priority
                 className="mx-auto overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
               />
             </div>

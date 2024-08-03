@@ -21,12 +21,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 import { toast } from "@/components/ui/use-toast";
 import { getChatUserInfo, postChatUserInfo } from "@/app/actions";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import {
+  AlertDialogHeader,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from "@/components/ui/alert-dialog";
+import { ExternalLink } from "@/components/external-link";
+import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 
 const FormSchema = z.object({
   proficiency_level: z
@@ -91,7 +103,7 @@ function UserForm() {
   return (
     <div className="flex-1 flex flex-col w-screen px-8 sm:max-w-md justify-center gap-2">
       <Link
-        href="/"
+        href="/dashboard"
         className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
       >
         <svg
@@ -335,9 +347,44 @@ function UserForm() {
 }
 
 export default function UserFormComp() {
+  const [key, setKey] = useLocalStorage<string | null>("ai-token", null);
+  const [keyAlertDialog, setKeyAlertDialog] = useState<boolean>(!key);
+  useEffect(() => {
+    if (key) {
+      setKeyAlertDialog(false);
+    }
+  }, [key]);
   return (
-    <Suspense>
-      <UserForm />
-    </Suspense>
+    <div>
+      <Suspense>
+        <UserForm />
+      </Suspense>
+      <AlertDialog open={keyAlertDialog} onOpenChange={setKeyAlertDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Enter your OpenAI Key</AlertDialogTitle>
+            <AlertDialogDescription>
+              If you have not obtained your OpenAI API key, you can do so by{" "}
+              <ExternalLink href="https://platform.openai.com/signup/">
+                signing up
+              </ExternalLink>
+              on the OpenAI website. The token will be saved to your
+              browser&apos;s local storage under the name{" "}
+              <code className="font-mono">ai-token</code>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Link
+              href={"/dashboard/settings/ai"}
+              className="text-green-500 underline"
+            >
+              <Button color="green" variant={"default"}>
+                Settings
+              </Button>
+            </Link>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }
