@@ -1,11 +1,14 @@
 <a href="https://learnterminal.vercel.app/">
   <img alt="Terminal" src="https://learnterminal.vercel.app/image.png">
   <h1 align="center">LearnTerminal</h1>
-</a>
-
 <p align="center">
  Learn Terminal commands with AI and test them on the fly
 </p>
+</a>
+
+## Demo
+
+https://youtu.be/TId8O4EkCYc?si=MIdGgYEmuoOXZiep
 
 # LearnTerminal
 
